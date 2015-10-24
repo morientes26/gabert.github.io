@@ -1,0 +1,25 @@
+
+<h1>Heiko Use Case</h1>
+
+<h3>What is Heiko?</h3>
+<strong>Heiko is Software Defined Anything Controller (SDx Controller) and IoT Service development platform.</strong>
+
+<h3>Heiko place in IoT ecosystem.</h3>
+<p>
+Probably the most apropriate way of describing of Heiko Use Case is to put it in relation to current IoT infrastructure. Typical IoT architecture is based on Gateway, which interconnects devices, sensors to some kind of Cloud with Service. In Cloud data center data is being processed and action is taken upon data received.
+</p>
+<img src="images/iotinfra.png"/>
+
+<p>
+Heiko approach is a bit different. Heiko concentrates more on "immediate" action if possible, rather than first sending data to big data centers. Heiko places computation as close to sensors as possible. Sending data to datacenters in parallel is possible as well, but optional. Aim is not to create unneccessary data flows, with potential loss during the way. Many times distance between data source, like sensors, and action devices, like ventilation, is few meters only. If not, data are free to go to data center for processing.
+</p>
+<img src="images/heikoarch.png"/>
+
+<p>
+In case monitoring and controlling scope is beyond the scope of single SDx Controller instance, Heiko can form cluster of interacting SDx Controllers. Heiko is intentionaly designed to form clusters. It is supported by both the internall architecture and an API. Clusters can be created over LAN or WAN, creating agent like topologies.
+</p>
+<img src="images/heikocluster.png"/>
+
+<blockquote>
+Heiko provides framework and API to expose device internal state to deployed services that alter this state.
+</blockquote>
