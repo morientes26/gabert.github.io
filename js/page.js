@@ -49,13 +49,14 @@ function clientSideInclude(id, url) {
 
 function getTitle() {
     var lcTitle = gup('article').replace(/-/g, ' ');
-    return 'Heiko :: ' + toTitleCase(lcTitle);
+    return toTitleCase(lcTitle);
 }
 
 function toTitleCase(str) {
     return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
+var defaultArticle = 'heiko-use-case';
 // credit to: http://www.netlobo.com/url_query_string_javascript.html
 function gup(name){
     name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -64,7 +65,7 @@ function gup(name){
     var results = regex.exec( window.location.href );
 
     if( results == null )
-        return 'whatis';
+        return defaultArticle;
     else
         return results[1];
 }
