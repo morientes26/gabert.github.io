@@ -1,0 +1,32 @@
+<h3>Heiko Sample Application: Run</h3>
+
+<p>
+After downloading or cloning project, change working directory to project root. Then enter:
+
+<pre><code class="bash">
+mvn clean install
+cd sample-app
+mvn exec:java -Dex=1
+</code></pre>
+
+After a while browser window will open showing Data Tree browser.
+
+<img src="images/ex1_1.png"/>
+</p>
+
+<p>
+Right side shows our managed components organized in tree structure. For a while just ignore system node. We'll get back to it in developers guide section. By unpacking individual nodes we get to clima and/or thermometer property leaves. Next to leaves there are three buttons for each property leaf. By clicking <strong>GET</strong> button, property value will be retrieved from managed component. Accordingly <strong>SET</strong> sets value of property. By clicking on <strong>LISTEN</strong> button, application will register value change listener. By setting LISTENER we will be notified, when value of property leaf changed. All retrieved values from GET or as a result of LISTENER are shown at the left side of an application window.
+</p>
+
+<p>
+To demonstrate controlling functionality of Heiko, peform following steps.
+  <ul>
+    <li>Check state of Clima power status by clicking <strong>GET</strong> button. Clima shows OFF state. Thermometer/temperature shows value 19</li>
+    <li>To demonstrate that our logic deployed in controller is working properly, register listener to clima/power property leaf by clicking <strong>LISTEN</strong> button.</li>
+    <li><strong>SET</strong> temperature value to 22. Immediately we'll be notified about clima/power value change to MEDIUM in Console on the left. We can also retrieve value from clima/power by clicking <strong>GET</strong> next to clima/power.</li>
+  </ul>
+
+And console output:
+
+<img src="images/ex1_2.png"/>
+</p>

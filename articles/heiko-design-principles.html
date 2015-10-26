@@ -1,0 +1,47 @@
+<h3>Heiko Design Principles</h3>
+
+<h4>State management</h4>
+<p>
+As mentioned in previous sections, Heiko is technically a Global State Manager. To support this paradigm at all levels, Heiko distinguishes between state components which represents devices or managed application, and state transition components represented by services.
+</p>
+
+<h4>Simplicity</h4>
+<p>
+Heiko doesn't try to enforce developer by any constraints. In fact Heiko is build with as few constraints as possible. This means developer can hack the system in multiple ways. And even implement constraints. Since SDx, SDE, IoT are fairly new directions in IT, it is hard to predict usage patterns of Controller like software. Hobby developers using controller for home development will have different expectations than industry controlling missile launch silo. Design of Heiko SDx Controller was driven with above uncertainty in mind. Heiko API is thus very simple. Just few intuitive calls. Attempt is to keep Heiko as simple as possible, but not simpler.
+</p>
+
+<h4>Basic Components</h4>
+<p>
+Heiko is using adapters to talk to devices or applications. These components represents part of the world we'd like to control. Heiko adapters are called <strong>Drivers</strong>. Role of a driver is to transform Heiko internal call to device or application specific call. Driver has a death simple API, which allows developers to implement basic driver in few minutes.
+</p>
+
+<p>
+Just by managing devices, Controller is quite "dumb" piece of software. To some level it is valuable. But not too much. <strong>Service</strong> is what makes Controller "smart" by providing interaction logic between devices. Service component adds quite a bit of business value. With service, Controller is autonomous in the task of and managing the controlled devices. Services are able to react and trigger actions on some components based on state of another ones.
+</p>
+
+<p>
+With Drivers and Services Heiko, can run autonomously. But there are situations when we need to connect to Heiko for some administration tasks, provide remote or GUI access.
+To connect to Heiko, developer should implement <strong>Connector</strong>. Connector represents access point to Controller functionality. With connector, Heiko exposes its functionality to outside world.
+</p>
+
+<blockquote>
+It's important to mention that services and connectors are components that can expose their state as well. Difference is only logical and lays in primary purpose of component.
+</blockquote>
+
+<h4>Model</h4>
+<p>
+Heiko encourages to use <strong>Model</strong> to describe it's managed componet properties and operations. Use of model is recommended but not mandatory. In fact mainly in prototyping phase or some simple scenarios, use of model can be huge overkill. It is possible to start work without model and then later on enhance driver/service/connector with model. Without change of any line of code. Use of model is hidden from developers as much as possible. By using models developer can take advantage of:
+
+<ul>
+  <li>validation of values before setting to components</li>
+  <li>automatic detection of change in data tree</li>
+  <li>data tree can be used by automation tools</li>
+  <li>data tree can be visualized</li>
+</ul>
+
+Without model, developer has to write few more lines of code if he wants to provide above functionality. Reason why model is supported but not required is pretty much the same why industry is moving towards REST instead of SOAP as well is why NoSQL is becomming so popular.
+</p>
+
+<p>
+When it comes to formal language used for Heiko Models there is no one specific. Heiko is a SDx controller and that means it can be used in industries with specific MODEL language requirement. Be it YANG for network devices, WSDL for webservices, or some proprietary modeling language. Developer has to provide translator between external model and internal HEIKO model. Model can be created programatically as well, or as mentioned MODEL can be completly ommitted.
+</p>
