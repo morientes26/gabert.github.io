@@ -1,0 +1,26 @@
+<h3>Heiko Kyla Message Distribution</h3>
+
+<h4>Kyla API</h4>
+
+<p>
+Heiko is based on asynchronous messaging between components-endpoints. Kyla is message distribution component used to route messages between Heiko endpoints. Actually Kyla is an API over various messaging technologies. Kyla uses data slots to deliver messages between components. Each data slot has one or more handlers attached to process incomming messages. Kyla messaging pattern used is reduced to only one. That is <strong>PUBLISH / SUBSCRIBE</strong>.
+</p>
+<p>
+DataSlotRegistry is the only interface that must be implemented to encapsulate another Message Distribution Framework. DataSlotRegistry prescribes several <strong>dataSlot &lt;-&gt; handler</strong> registration types.
+  <pre>
+    <code class="java">
+public interface DataSlotRegistry {
+    void registerExclusive(Endpoint endpoint, String dataSlotId);
+
+    void registerShared(Endpoint endpoint, String dataSlotId);
+
+    void registerParallel(Endpoint endpoint, String dataSlotId);
+}
+    </code>
+  </pre>
+  <ul>
+    <li><strong>Exclusive Registration</strong> of endpoint to dataslot results to RPC like functionality. If handler is exclusively registered to dataslot, no other handler registration within same dataslot is permitted. It is used mainly to provide exclusive address of Endpoint.</li>
+    <li><strong>Shared registration</strong> of endpoint to dataslot results to PUB/SUB like functionality. Multiple registrations of handlers within same dataslot are permitted. Each message delivered to shared dataslot will be delivered to each registered handler.</li>
+    <li><strong>Parallel registration</strong> is similar to Exclusive registration. Parallel registration enables horizontal scaling of Kyla. It is used in situation where there is a need to deal with massive message processing.</li>
+  </ul>
+</p>
