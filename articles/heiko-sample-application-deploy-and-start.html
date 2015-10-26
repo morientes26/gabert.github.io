@@ -1,0 +1,110 @@
+<h3>Heiko Sample Application: Deploy and Start</h3>
+
+<p>
+After we have developed Drivers and Services it's time do deploy and run our application.
+
+Heiko SDx Controller is driven by <strong>assembly file</strong> with following structure:
+
+<pre><code class="javascript">
+{
+  "aliases" : {"thermometerDriver": "net.gabert.sdx.sampleapp.driver.Thermometer",
+               "climaDriver": "net.gabert.sdx.sampleapp.driver.Climatization"},
+
+  "bus" : {"configUrl" : "classpath:kylacfg.json"},
+
+  "components" : [
+    {"componentClass": "${climaDriver}",
+     "id": "clima-1"},
+
+    {"componentClass": "${climaDriver}",
+     "id": "clima-2"},
+
+    {"componentClass": "${thermometerDriver}",
+     "id": "thermo-1"},
+
+    {"componentClass": "${thermometerDriver}",
+      "id": "thermo-2"},
+
+    {"componentClass": "net.gabert.sdx.sampleapp.service.ClimatizationControlService",
+      "id": "ccs-1"},
+
+    {"componentClass": "net.gabert.sdx.heiko.component.http.HttpConnector",
+      "id": "httpConnector",
+      "initParams": {"contextPath" : "/connector",
+                     "servicePort" : 9091,
+                     "headerAllowOrigin": "http://localhost:9090"}},
+
+    {"componentClass": "net.gabert.sdx.heiko.component.http.WebSocketConnector",
+      "id": "webSocketConnector",
+      "initParams": {"contextPath" : "/websockets",
+                     "servicePort" : 9999}},
+
+    {"componentClass": "net.gabert.sdx.heiko.component.http.HttpApplication",
+      "id": "heikoBrowser",
+      "initParams": {"welcomeFile" : "index.html",
+                     "contextPath" : "/browser",
+                     "guiRootPath" : "webapp",
+                     "servicePort" : 9090}}
+  ],
+
+  "mappings" : {
+    "/system/devices/clima-1": "/las-vegas/big-house/clima",
+    "/system/devices/clima-2": "/toronto/apartment/clima",
+    "/system/devices/thermo-1": "/las-vegas/big-house/thermometer",
+    "/system/devices/thermo-2": "/toronto/apartment/thermometer"
+  }
+}
+</code></pre>
+</p>
+
+<p>
+There are more components in assembly file than we have developed. For now just ignore them.
+<pre><code>
+"aliases"    // used for aliasing long Strings
+"bus"        // Kyla messaging core configuration file
+"components" // list of components (drivers, services, connectors) that forms Controller
+"mappings"   // links creating SDx Controller DATA TREE
+</code></pre>
+</p>
+
+<h4>Components and mappings</h4>
+<p>
+By default each component is mapped under
+<pre><code>
+/system
+</code></pre>
+</p>
+
+<p>
+part of DATA TREE. Drivers under devices, Services under services and Connectors under connectors part of  <strong>/system</strong> subtree. Each component in <strong>components</strong> section has an id. Id is not mandatory. If not provided, SDx Controller will generate one. In that case component cannot be statically mapped to DATA TREE. Only dynamic mapping will be allowed.
+</p>
+
+<p>
+Mapping section is provided to allow user to organize components in some basic meaningful way. It is allowed to create multiple mappings for one component. Here we have mapped <strong>devices/drivers</strong> only. But Services and Connectors can be mapped as well.
+</p>
+
+<p>
+Last step is SDx Controller boot. Boot is as simple as:
+
+<pre><code class="javascript">
+public static void main(String[] args)  {
+    Controller controller = Controller.boot("assemblyFile.json");
+}
+</code></pre>
+</p>
+
+<p>
+As mentioned few lines before, there are more components in assembly file than we have developed in this quickstart tutorial. We have not mentioned Clima Driver because it is very similar to Thermometer Driver.
+</p>
+
+<p>
+As well, we have not payed attention to developing Connectors. Simply because Connector has same semantics as Service and contains uninteresting code using open source libraries. By implementing connectors we can create multiple language binding to work with Heiko. One can create REST or ZeroMQ Connectors which can be used by multiple languages then.
+</p>
+
+<p>
+However code is part of Heiko distribution. Everyone interested is encouraged to browse code at.
+
+<pre><code>
+project-root/sample-app
+</code></pre>
+</p>

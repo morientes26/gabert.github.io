@@ -1,0 +1,74 @@
+<h3>Heiko Sample Application: Writing Services</h3>
+
+<p>
+Next have devices and we need to implement state transition logic. Logic is a separate Heiko SDx controller component and is represented by <strong>Service</strong>. Service is self explanatory:
+<pre><code class="java">
+public class ClimatizationControlService extends Service {
+    @Override
+    public void start(Map< String, Object > initParams) {
+        Context thermometerLA = getPathContext("/las-vegas/big-house/thermometer");
+        Context thermometerTO = getPathContext("/toronto/apartment/thermometer");
+
+        Logic logicLA = new Logic("/las-vegas/big-house/clima");
+        Logic logicTO = new Logic("/toronto/apartment/clima");
+
+        thermometerLA.registerListener("/temperature", logicLA);
+        thermometerTO.registerListener("/temperature", logicTO);
+    }
+
+    @Override
+    public void stop() {}
+
+    private class Logic implements ValueChangeListener {
+
+        private final Context clima;
+
+        private Logic(String climaPath) {
+            this.clima = getPathContext(climaPath);
+        }
+
+        @Override
+        public void onDataChanged(Object value) {
+            int temperature = ((Number)value).intValue();
+
+            if (temperature < 20) {
+                clima.setValue("/power", "OFF");
+            } else if (temperature >= 20 && temperature < 30) {
+                clima.setValue("/power", "MEDIUM");
+            } else if (temperature >= 30) {
+                clima.setValue("/power", "HIGH");
+            }
+        }
+    }
+}
+</code></pre>
+</p>
+
+<p>
+Code consists of two standard life cycle methods and one inner class. In <strong>start(...)</strong> life cycle method we create and register value change listeners. It is important to not to block <strong>start(...)</strong>, as all <strong>start(...)</strong> methods are called sequentially within bootstrap thread. All other communication within Heiko is fully asynchronous. Following piece of code is entry point to work with data leaves:
+<pre><code class="java">
+Context thermometerLA = getPathContext("/las-vegas/big-house/thermometer");
+</code></pre>
+</p>
+
+<p>
+Only Context objects has methods to work with data leaves. Context is technically a shortcut alias. One could create Context as well with any of the following calls.
+<pre><code class="java">
+Context thermometerLA = getPathContext("/las-vegas/big-house");
+Context thermometerLA = getPathContext("/las-vegas");
+Context thermometerLA = getPathContext();
+</code></pre>
+</p>
+
+<p>
+On next lines, listeners are attached to data leaves. To link listener registration to above three ways of creating Context:
+<pre><code class="java">
+thermometerLA.registerListener("/thermometer/temperature", logicLA);
+thermometerLA.registerListener("/big-house/thermometer/temperature", logicLA);
+thermometerLA.registerListener("/las-vegas/big-house/thermometer/temperature", logicLA);
+</code></pre>
+</p>
+
+<p>
+Next usage of Context is in ValueChangeListener implementation of state transition logic. In ValueChangeListener we create Context for Clima and use it to set clima/power  value based on thermometer/temperature value from callback method onDataChanged().
+</p>

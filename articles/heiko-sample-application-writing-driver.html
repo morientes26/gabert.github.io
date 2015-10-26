@@ -1,7 +1,7 @@
 <h3>Heiko Sample Application: Writing Driver</h3>
 
 <p>
-As mentioned in previous section, <strong>Driver</strong> acts as an adapter between Heiko and device or application. To write driver extend:
+As mentioned in previous section, <strong>Driver</strong> acts as an adapter between Heiko and device or application. Driver is a typical state object. To write driver extend:
 
 <pre><code class="java">
 public class Thermometer extends Driver {
@@ -35,7 +35,7 @@ As driver extends component, it is provided with two lifecycle methods.
 </ul>
 </p>
 
-<h4>Core component methods.</h4>
+<h4>Core component methods</h4>
 <p>
 There are three of them:
 <ul>
@@ -55,9 +55,9 @@ is more natural in this case. But again Heiko is not enforcing any way.
 <h4>Path Vector</h4>
 <p>
 Common parameter of component methods is <strong>PathVector</strong>. Heiko addresses values in managed component by <strong>Path</strong> parameter. Similar to <strong>XPath</strong>.
-PathVector is split version of Path. Every component called by Heiko then receives this PathVector.
+PathVector is split version of Path. Every component called by Heiko then receives this PathVector. More specifically. Each component receives Relative PathVector.
 <pre><code>
-/toronto/apartement/clima/power => {toronto, apartment, clima, power}
+/toronto/apartment/thermometer/temperature => {toronto, apartment, thermometer, temperature}
 </code></pre>
 </p>
 
@@ -104,7 +104,7 @@ MODEL.addDataLeaf("/level1/level2/temperature", LongLeaf.class);
 </p>
 
 <p>
-With all of the informations above, our thermometer driver looks like this:
+With all of the informations above, our complete thermometer driver looks like this:
 <pre><code class="java">
 public class Thermometer extends Driver {
     private static final Model MODEL = new Model();
