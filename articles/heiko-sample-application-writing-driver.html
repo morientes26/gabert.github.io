@@ -1,1 +1,153 @@
 <h3>Heiko Sample Application: Writing Driver</h3>
+
+<p>
+As mentioned in previous section, <strong>Driver</strong> acts as an adapter between Heiko and device or application. To write driver extend:
+
+<pre><code class="java">
+public class Thermometer extends Driver {
+    @Override
+    public void start(Map< String, Object > initParams) {}
+
+    @Override
+    public void stop() {}
+
+    @Override
+    public Model getModel() {}
+
+    @Override
+    public Object getValue(String[] pathVector) {}
+
+    @Override
+    public void setValue(String[] pathVector, Object value) {}
+
+    @Override
+    public Object call(String[] pathVector, Object... params) {}
+}
+</code></pre>
+</p>
+
+<h4>Lifecycle methods</h4>
+<p>
+As driver extends component, it is provided with two lifecycle methods.
+<ul>
+  <li>start(Map&lt;String, Object&gt; initParams) is called during Controller boot process. During start, component is provided by initialization parameters</li>
+  <li>stop() is called when Heiko Controller is being stopped</li>
+</ul>
+</p>
+
+<h4>Core component methods.</h4>
+<p>
+There are three of them:
+<ul>
+  <li>getValue(String[] pathVector) is called by controller when value of component leaf is requested. Parameter passed is <strong>Relative Path Vector</strong></li>
+  <li>setValue(String[] pathVector, Object value) is called by controller when vale of component leaf must be set. Parameter passed is <strong>Relative Path Vector</strong></li>
+  <li>call(String[] pathVector, Object... params) in some situations calling function is more convenient compared to state change. Taking camera snaphot can be done by setting aperture, shutter speed and ISO as property leaves and then switch on another leaf which would trigger shuter action. But calling:</li>
+</ul>
+<pre><code>
+/palo-alto/telescope/snaphot 2.8 1/1000 6400
+</code></pre>
+</p>
+
+<p>
+is more natural in this case. But again Heiko is not enforcing any way.
+</p>
+
+<h4>Path Vector</h4>
+<p>
+Common parameter of component methods is <strong>PathVector</strong>. Heiko addresses values in managed component by <strong>Path</strong> parameter. Similar to <strong>XPath</strong>.
+PathVector is split version of Path. Every component called by Heiko then receives this PathVector.
+<pre><code>
+/toronto/apartement/clima/power => {toronto, apartment, clima, power}
+</code></pre>
+</p>
+
+<h4>Global, Mount and Relative Paths</h4>
+<p>
+<pre><code>
+/toronto/apartment/thermometer/temperature
+</code></pre>
+</p>
+
+<p>
+Is <strong>Global Path</strong>. It is a Global address of temperature property of one concrete thermometer device.  Global address consists of two parts. <strong>Mount Path</strong> and <strong>Relative Path</strong>. Driver as reusable component is  only aware about it's own (relative) path(s).
+<pre><code>
+/temperature
+</code></pre>
+</p>
+
+<p>
+Is Relative Path. It is in scope of driver and represents the  driver Data Tree.
+<pre><code>
+/toronto/apartment/thermometer
+</code></pre>
+</p>
+
+<p>
+is Mount Path. Represents path where our instance of thermometer driver is mounted.
+</p>
+
+<h4>Model</h4>
+<p>
+In <a href="index.html?article=heiko-design-principles">Design Principles</a> we have described usage of models by Heiko.
+In our sample application we'll create model programatically.
+<pre><code class="java">
+Model MODEL = new Model();
+MODEL.addDataLeaf("/temperature", LongLeaf.class);
+</code></pre>
+</p>
+
+<p>
+We create model by setting leaf data type to relative path. In this case we expose temperature property of our hypothetical thermometer. If we like temperature to be accessible from deeper levels just change the path.
+<pre><code class="java">
+MODEL.addDataLeaf("/level1/level2/temperature", LongLeaf.class);
+</code></pre>
+</p>
+
+<p>
+With all of the informations above, our thermometer driver looks like this:
+<pre><code class="java">
+public class Thermometer extends Driver {
+    private static final Model MODEL = new Model();
+
+    private final SimpleDB simulatedDeviceData = new SimpleDB(MODEL);
+
+    static {
+        MODEL.addDataLeaf("/temperature", LongLeaf.class);
+    }
+
+    @Override
+    public void start(Map<String, Object> initParams) {
+        simulatedDeviceData.setValue("temperature", 19);
+    }
+
+    @Override
+    public void stop() {}
+
+    @Override
+    public Model getModel() {
+        return MODEL;
+    }
+
+    @Override
+    public Object getValue(String[] pathVector) {
+        return simulatedDeviceData.getValue(pathVector);
+    }
+
+    @Override
+    public void setValue(String[] pathVector, Object value) {
+        simulatedDeviceData.setValue(pathVector, value);
+    }
+
+    @Override
+    public Object call(String[] pathVector, Object... params) { return null; }
+}
+</code></pre>
+</p>
+
+<p>
+Of course in real scenario, instead of using helper class which simulates device database, some real communication with device has to take place.
+</p>
+
+<p>
+By providing model, we do not have to take care of value change publish. Value change is detected when someone requested leaf value, or someone set leaf value. In both cases value change event is triggered. In real scenario, in start method, developer would write piece of code that would either poll device for actual data, or initialize some kind of notification protocol from device.
+</p>
