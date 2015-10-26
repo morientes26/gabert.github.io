@@ -1,0 +1,30 @@
+<h3>Heiko Sample Application Use Case</h3>
+
+<p>
+Clima Controll Sample Application demonstrates controlling climatization based on thermometer value. Our very simple clima can be set to one of three states: OFF, MEDIUM or HIGH. Since we want clima to be controlled entirely by <strong>SDx Controller</strong> we have deployed controlling logic into SDx Controller.
+
+Clima will be controlled by following pseudo logic:
+<pre><code>
+if temperature < 20                      => clima = OFF
+if temperature >= 20 && temperature < 30 => clima = MEDIUM
+if temperature >= 30                     => clima = HIGH
+</code></pre>
+</p>
+
+<p>
+Clima will be controlled in two different houses in different towns. Big House in Las Vegas and some imaginary Apartment in Toronto.
+Heiko uses tree like organization of components. In our case tree looks like the following one:
+<pre><code>
+/--- DATA TREE
+   /---las-vegas
+   |   /---big-house
+   |       ---clima
+   |       ---thermometer
+   |
+   /---toronto
+       /---apartement
+           ---clima
+           ---thermometer
+</code></pre>
+Clima and Thermometer are actually dummy devices. Under normal circumstances thermometer value would be either polled/read by some process, or in case of more advanced protocol, thermometer could provide us by events. For now lets just cheat a bit, and set value of thermometer manually. We expect from <strong>Heiko</strong> that as soon as value of thermometer change is detected, <strong>SDx Controller</strong> will set clima power to reflect this change.
+</p>
